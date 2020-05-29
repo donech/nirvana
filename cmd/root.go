@@ -74,3 +74,8 @@ func initConfig() {
 		log.Panicln("Read config file failed:", viper.ConfigFileUsed(), err.Error())
 	}
 }
+
+//RegistCommand Regist a Command to rootCommand
+func RegistCommand(c *cobra.Command) {
+	rootCmd.AddCommand(c)
+}

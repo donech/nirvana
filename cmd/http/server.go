@@ -17,7 +17,7 @@ limitations under the License.
 package http
 
 import (
-	"log"
+	"github.com/donech/nirvana/internal/iface/gin"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +27,11 @@ var ServerCmd = &cobra.Command{
 	Use:   "http",
 	Short: "Server http with gin framework",
 	Long:  `Server http with gin framework`,
-	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("server http in :8080")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return run()
 	},
+}
+
+func run() error {
+	return gin.Start()
 }
