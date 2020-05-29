@@ -1,0 +1,10 @@
+\#*
+.\#*
+!.gitignore
+vendor
+*.DS_Store
+.idea/
+main
+nirvana
+go.sum
+cmd/app.yaml
