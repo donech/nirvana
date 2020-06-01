@@ -4,6 +4,7 @@ package inject
 
 import (
 	"github.com/donech/nirvana/internal/config"
+	"github.com/donech/nirvana/internal/conn"
 	"github.com/donech/nirvana/internal/domain"
 	"github.com/donech/nirvana/internal/iface/gin"
 	"github.com/donech/tool/xlog"
@@ -23,6 +24,7 @@ func InitApplication() (entry *gin.Entry, cleanup func(), err error) {
 		gin.WireSet,
 		domain.WireSet,
 		providerLogger,
+		conn.NewNirvanaDB,
 	)
 	return &gin.Entry{}, nil, nil
 }

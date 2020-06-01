@@ -3,6 +3,8 @@ package config
 import (
 	"log"
 
+	"github.com/donech/tool/xdb"
+
 	"github.com/donech/tool/xlog"
 
 	"github.com/spf13/viper"
@@ -14,6 +16,7 @@ type Config struct {
 	Application ApplicationConfig `yaml:"application"`
 	Gin         GinConfig         `yaml:"gin"`
 	Log         xlog.Config       `yaml:"log"`
+	NirvanaDB   xdb.Config        `yaml:"nirvanaDB"`
 }
 
 type ApplicationConfig struct {

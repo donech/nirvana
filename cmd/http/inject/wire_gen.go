@@ -7,6 +7,7 @@ package inject
 
 import (
 	"github.com/donech/nirvana/internal/config"
+	"github.com/donech/nirvana/internal/conn"
 	"github.com/donech/nirvana/internal/domain/user/service"
 	"github.com/donech/nirvana/internal/iface/gin"
 	"github.com/donech/nirvana/internal/iface/gin/controller"
@@ -21,15 +22,18 @@ import (
 func InitApplication() (*gin.Entry, func(), error) {
 	viperViper := viper.GetViper()
 	configConfig := config.New(viperViper)
-	simpleService := service.NewSimpleService()
+	nirvanaDB, cleanup := conn.NewNirvanaDB(configConfig)
+	simpleService := service.NewSimpleService(nirvanaDB)
 	userController := controller.NewUserController(simpleService)
 	routerRouter := router.NewRouter(userController)
 	logger, err := providerLogger(configConfig)
 	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	entry := gin.NewEntry(configConfig, routerRouter, logger)
 	return entry, func() {
+		cleanup()
 	}, nil
 }
 
