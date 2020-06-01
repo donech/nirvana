@@ -17,7 +17,9 @@ limitations under the License.
 package http
 
 import (
-	"github.com/donech/nirvana/internal/iface/gin"
+	"log"
+
+	"github.com/donech/nirvana/cmd/http/inject"
 
 	"github.com/spf13/cobra"
 )
@@ -33,5 +35,21 @@ var ServerCmd = &cobra.Command{
 }
 
 func run() error {
-	return gin.Start()
+	entry, clean, err := inject.InitApplication()
+	defer func() {
+		if clean != nil {
+			clean()
+		}
+	}()
+
+	if err != nil {
+		log.Println("init application failed :", err.Error())
+		return err
+	}
+
+	err = entry.Run()
+	if err != nil {
+		log.Println("entry run failed :", err.Error())
+	}
+	return err
 }
