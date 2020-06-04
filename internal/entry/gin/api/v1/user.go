@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/unknwon/com"
+
 	"github.com/donech/core/xlog"
 
 	"github.com/prometheus/common/log"
@@ -32,6 +34,34 @@ func (c UserController) GetUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, gin.H{"user": user})
+}
+
+func (c UserController) GetUserList(ctx *gin.Context) {
+	cursor := com.StrTo(ctx.Query("cursor")).MustInt64()
+	size := com.StrTo(ctx.Query("size")).MustInt64()
+	if size == 0 {
+		size = 20
+	}
+	users, err := c.UserSimpleService.ItemsByCursor(ctx.Request.Context(), cursor, size+1)
+	if err != nil {
+		xlog.Ctx(ctx.Request.Context()).Error("some thing wrong", err)
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	cursor = 0
+	hasMore := false
+	if int64(len(users)) > size {
+		cursor = users[size].ID
+		hasMore = true
+		users = users[0:size]
+	}
+	ctx.JSON(200, gin.H{
+		"list": users,
+		"pager": Pager{
+			Cursor:  cursor,
+			Size:    size,
+			HasMore: hasMore,
+		}})
 }
 
 func (c UserController) CreateUser(ctx *gin.Context) {
@@ -87,6 +117,7 @@ func (c UserController) Migration(ctx *gin.Context) {
 
 func (c UserController) RegisterRoute(root *gin.RouterGroup) {
 	r := root.Group("/v1/user")
+	r.GET("/", c.GetUserList)
 	r.GET("/:id", c.GetUser)
 	r.DELETE("/:id", c.DeleteUser)
 	r.PUT("/:id", c.UpdateUser)

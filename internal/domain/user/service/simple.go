@@ -24,6 +24,11 @@ func (s SimpleService) ItemByID(ctx context.Context, id int64) (e entity.User, e
 	return e, err
 }
 
+func (s SimpleService) ItemsByCursor(ctx context.Context, cursor, size int64) (e []entity.User, err error) {
+	err = xdb.Trace(ctx, s.db).Where("id >= ?", cursor).Limit(size).Find(&e).Error
+	return e, err
+}
+
 func (s SimpleService) Create(ctx context.Context, data map[string]interface{}) (user entity.User, err error) {
 	user = entity.User{
 		Name:  data["name"].(string),
