@@ -4,8 +4,9 @@ import "github.com/donech/tool/xdb"
 
 type User struct {
 	xdb.Entity
-	Name  string
-	Phone string
+	Name  string `json:"name"`
+	Phone string `json:"phone"`
+	xdb.CUDTime
 }
 
 func (e User) TableName() string {
