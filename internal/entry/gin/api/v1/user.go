@@ -1,14 +1,11 @@
 package v1
 
 import (
-	"math/rand"
-	"strconv"
+	"github.com/donech/nirvana/internal/code"
 
 	"github.com/unknwon/com"
 
-	"github.com/donech/core/xlog"
-
-	"github.com/prometheus/common/log"
+	"github.com/donech/tool/xlog"
 
 	"github.com/donech/nirvana/internal/domain/user/service"
 	"github.com/gin-gonic/gin"
@@ -23,17 +20,14 @@ type UserController struct {
 }
 
 func (c UserController) GetUser(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-	if err != nil {
-		log.Fatalln("id must convert failed", err.Error())
-	}
+	id := com.StrTo(ctx.Param("id")).MustInt64()
 	user, err := c.UserSimpleService.ItemByID(ctx.Request.Context(), id)
 	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Error("some thing wrong", err)
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		xlog.S(ctx.Request.Context()).Error("some thing wrong", err)
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
 		return
 	}
-	ctx.JSON(200, gin.H{"user": user})
+	ResponseJSON(ctx, code.Success, "", user)
 }
 
 func (c UserController) GetUserList(ctx *gin.Context) {
@@ -44,8 +38,8 @@ func (c UserController) GetUserList(ctx *gin.Context) {
 	}
 	users, err := c.UserSimpleService.ItemsByCursor(ctx.Request.Context(), cursor, size+1)
 	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Error("some thing wrong", err)
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		xlog.S(ctx.Request.Context()).Error("some thing wrong", err)
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
 		return
 	}
 	cursor = 0
@@ -55,7 +49,7 @@ func (c UserController) GetUserList(ctx *gin.Context) {
 		hasMore = true
 		users = users[0:size]
 	}
-	ctx.JSON(200, gin.H{
+	ResponseJSON(ctx, code.Success, "", gin.H{
 		"list": users,
 		"pager": Pager{
 			Cursor:  cursor,
@@ -64,55 +58,66 @@ func (c UserController) GetUserList(ctx *gin.Context) {
 		}})
 }
 
+type UserForm struct {
+	Name  string `json:"name" form:"name" binding:"required"`
+	Phone string `json:"phone" form:"phone" binding:"required,email"`
+}
+
 func (c UserController) CreateUser(ctx *gin.Context) {
+	var userForm UserForm
+	err := ctx.ShouldBind(&userForm)
+	if err != nil {
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
+		return
+	}
 	data := map[string]interface{}{
-		"name":  "solar" + strconv.Itoa(rand.Int()),
-		"phone": "18001023261",
+		"name":  userForm.Name,
+		"phone": userForm.Phone,
 	}
 	user, err := c.UserSimpleService.Create(ctx.Request.Context(), data)
 	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Error("some thing wrong", err)
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		xlog.S(ctx.Request.Context()).Error("some thing wrong", err)
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
 		return
 	}
-	ctx.JSON(200, gin.H{"status": "success", "user": user})
+	ResponseJSON(ctx, code.Success, "ok", gin.H{"status": "success", "user": user})
 }
 
 func (c UserController) UpdateUser(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	id := com.StrTo(ctx.Param("id")).MustInt64()
+	var userForm UserForm
+	err := ctx.ShouldBind(&userForm)
 	if err != nil {
-		log.Fatalln("id must convert failed", err.Error())
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
+		return
 	}
 	data := map[string]interface{}{
-		"name":  "solar" + strconv.Itoa(rand.Int()),
-		"phone": "18001023261",
+		"name":  userForm.Name,
+		"phone": userForm.Phone,
 	}
 	err = c.UserSimpleService.Update(ctx.Request.Context(), id, data)
 	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Error("some thing wrong", err)
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		xlog.S(ctx.Request.Context()).Error("some thing wrong", err)
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
 		return
 	}
 	ctx.JSON(200, gin.H{"status": "success"})
 }
 
 func (c UserController) DeleteUser(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	id := com.StrTo(ctx.Param("id")).MustInt64()
+	err := c.UserSimpleService.Delete(ctx.Request.Context(), id)
 	if err != nil {
-		log.Fatalln("id must convert failed", err.Error())
-	}
-	err = c.UserSimpleService.Delete(ctx.Request.Context(), id)
-	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Error("some thing wrong", err)
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		xlog.S(ctx.Request.Context()).Error("some thing wrong", err)
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
 		return
 	}
-	ctx.JSON(200, gin.H{"status": "success"})
+	ResponseJSON(ctx, code.Success, "", gin.H{"status": "success"})
 }
 
 func (c UserController) Migration(ctx *gin.Context) {
 	c.UserSimpleService.Migration()
-	ctx.JSON(200, gin.H{"status": "success"})
+	ResponseJSON(ctx, code.Success, "", gin.H{"status": "success"})
 }
 
 func (c UserController) RegisterRoute(root *gin.RouterGroup) {
