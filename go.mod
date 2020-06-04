@@ -16,3 +16,7 @@ require (
 	github.com/uber/jaeger-client-go v2.23.1+incompatible
 	go.uber.org/zap v1.15.0
 )
+
+replace github.com/donech/tool => /Users/piaoweixiong/donech/tool
+
+

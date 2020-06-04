@@ -9,9 +9,9 @@ import (
 	"github.com/donech/nirvana/internal/config"
 	"github.com/donech/nirvana/internal/conn"
 	"github.com/donech/nirvana/internal/domain/user/service"
-	"github.com/donech/nirvana/internal/iface/gin"
-	"github.com/donech/nirvana/internal/iface/gin/controller"
-	"github.com/donech/nirvana/internal/iface/gin/router"
+	"github.com/donech/nirvana/internal/entry/gin"
+	"github.com/donech/nirvana/internal/entry/gin/api/v1"
+	"github.com/donech/nirvana/internal/entry/gin/router"
 	"github.com/donech/tool/xlog"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -24,7 +24,7 @@ func InitApplication() (*gin.Entry, func(), error) {
 	configConfig := config.New(viperViper)
 	nirvanaDB, cleanup := conn.NewNirvanaDB(configConfig)
 	simpleService := service.NewSimpleService(nirvanaDB)
-	userController := controller.NewUserController(simpleService)
+	userController := v1.NewUserController(simpleService)
 	routerRouter := router.NewRouter(userController)
 	logger, err := providerLogger(configConfig)
 	if err != nil {

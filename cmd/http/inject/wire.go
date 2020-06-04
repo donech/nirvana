@@ -6,7 +6,7 @@ import (
 	"github.com/donech/nirvana/internal/config"
 	"github.com/donech/nirvana/internal/conn"
 	"github.com/donech/nirvana/internal/domain"
-	"github.com/donech/nirvana/internal/iface/gin"
+	"github.com/donech/nirvana/internal/entry/gin"
 	"github.com/donech/tool/xlog"
 	"github.com/google/wire"
 	"github.com/spf13/viper"

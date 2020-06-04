@@ -3,29 +3,13 @@ package service
 import (
 	"context"
 
+	"github.com/donech/nirvana/internal/domain/user/entity"
+
 	"github.com/donech/nirvana/internal/conn"
 
-	"github.com/donech/core/xtrace"
 	"github.com/donech/tool/xdb"
 	"github.com/jinzhu/gorm"
 )
-
-type BaseApps struct {
-	AppId        string `json:"app_id"`
-	AppName      string `json:"app_name"`
-	DebugMode    int    `json:"debug_mode"`
-	AppConfig    string `json:"app_config"`
-	Status       string `json:"status"`
-	Webpath      string `json:"webpath"`
-	Description  string `json:"description"`
-	LocalVer     string `json:"local_ver"`
-	RemoteVer    string `json:"remote_ver"`
-	AuthorName   string `json:"author_name"`
-	AuthorUrl    string `json:"author_url"`
-	AuthorEmail  string `json:"author_email"`
-	Dbver        string `json:"dbver"`
-	RemoteConfig string `json:"remote_config"`
-}
 
 func NewSimpleService(db conn.NirvanaDB) *SimpleService {
 	return &SimpleService{db: db}
@@ -35,8 +19,27 @@ type SimpleService struct {
 	db *gorm.DB
 }
 
-func (s SimpleService) ItemByID(ID int64) interface{} {
-	data := BaseApps{}
-	xdb.Trace(xtrace.NewCtxWithTraceID(context.Background()), s.db).Table("base_apps").Where("app_id = ?", "base").First(&data)
-	return data
+func (s SimpleService) ItemByID(ctx context.Context, id int64) (e entity.User, err error) {
+	err = xdb.Trace(ctx, s.db).Where("id = ?", id).First(&e).Error
+	return e, err
+}
+
+func (s SimpleService) Create(ctx context.Context, data map[string]interface{}) (user entity.User, err error) {
+	user = entity.User{
+		Name:  data["name"].(string),
+		Phone: data["phone"].(string),
+	}
+	return user, xdb.Trace(ctx, s.db).Create(&user).Error
+}
+
+func (s SimpleService) Update(ctx context.Context, id int64, data map[string]interface{}) error {
+	return xdb.Trace(ctx, s.db).Model(&entity.User{}).Where("id = ?", id).Updates(data).Error
+}
+
+func (s SimpleService) Delete(ctx context.Context, id int64) error {
+	return xdb.Trace(ctx, s.db).Where("id = ?", id).Delete(entity.User{}).Error
+}
+
+func (s SimpleService) Migration() {
+	s.db.AutoMigrate(entity.User{})
 }

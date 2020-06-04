@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var C Config
+var C *Config
 
 type Config struct {
 	Application ApplicationConfig `yaml:"application"`
@@ -33,5 +33,5 @@ func New(viper *viper.Viper) *Config {
 	if err != nil {
 		log.Fatalln("can't unmarshal viper to Config :", err)
 	}
-	return &C
+	return C
 }

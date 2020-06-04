@@ -1,4 +1,4 @@
-package iface
+package entry
 
 type Entry interface {
 	Run() error

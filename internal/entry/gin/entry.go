@@ -12,7 +12,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/donech/nirvana/internal/iface/gin/router"
+	"github.com/donech/nirvana/internal/entry/gin/router"
 
 	"github.com/donech/nirvana/internal/config"
 	"github.com/gin-gonic/gin"
@@ -24,9 +24,9 @@ func NewEntry(conf *config.Config, router *router.Router, logger *zap.Logger) *E
 	engine := gin.New()
 	engine.Use(ginzap.GinZap(zap.L(), time.RFC3339, true, conf.Application.Mod))
 	engine.Use(ginzap.RecoveryWithZap(zap.L(), true))
-	engine.GET("/redness", func(ctx *gin.Context) {
+	engine.GET("/health", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
-			"ping": "pong",
+			"status": "health",
 		})
 	})
 	E = &Entry{
