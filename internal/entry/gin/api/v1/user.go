@@ -36,7 +36,7 @@ func (c UserController) GetUserList(ctx *gin.Context) {
 	if size == 0 {
 		size = 20
 	}
-	users, err := c.UserSimpleService.ItemsByCursor(ctx.Request.Context(), cursor, size+1)
+	users, err := c.UserSimpleService.ItemsByCursorReverse(ctx.Request.Context(), cursor, size+1)
 	if err != nil {
 		xlog.S(ctx.Request.Context()).Error("some thing wrong", err)
 		ResponseJSON(ctx, code.Error, err.Error(), nil)

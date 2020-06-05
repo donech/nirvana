@@ -29,6 +29,15 @@ func (s SimpleService) ItemsByCursor(ctx context.Context, cursor, size int64) (e
 	return e, err
 }
 
+func (s SimpleService) ItemsByCursorReverse(ctx context.Context, cursor, size int64) (e []entity.User, err error) {
+	db := xdb.Trace(ctx, s.db).Order("id desc").Limit(size)
+	if cursor > 0 {
+		db = db.Where("id <= ?", cursor)
+	}
+	err = db.Find(&e).Error
+	return e, err
+}
+
 func (s SimpleService) Create(ctx context.Context, data map[string]interface{}) (user entity.User, err error) {
 	user = entity.User{
 		Name:  data["name"].(string),
