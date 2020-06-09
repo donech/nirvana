@@ -8,6 +8,9 @@ import (
 	"os/signal"
 	"time"
 
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
+
 	"github.com/donech/tool/xlog/ginzap"
 
 	"go.uber.org/zap"
@@ -15,6 +18,8 @@ import (
 	"github.com/donech/nirvana/internal/entry/gin/router"
 
 	"github.com/donech/nirvana/internal/config"
+	_ "github.com/donech/nirvana/internal/entry/gin/docs"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,6 +34,7 @@ func NewEntry(conf *config.Config, router *router.Router, logger *zap.Logger) *E
 			"status": "health",
 		})
 	})
+	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	E = &Entry{
 		conf:   conf,
 		engine: engine,

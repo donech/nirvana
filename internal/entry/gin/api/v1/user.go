@@ -19,6 +19,13 @@ type UserController struct {
 	UserSimpleService *service.SimpleService
 }
 
+// @获取指定ID用户
+// @Summary Get a single user
+// @Produce  json
+// @Param id path int true "ID"
+// @Success 200 {object} Response
+// @Failure 500 {object} Response
+// @Router /v1/user/{id} [get]
 func (c UserController) GetUser(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt64()
 	user, err := c.UserSimpleService.ItemByID(ctx.Request.Context(), id)
@@ -30,6 +37,12 @@ func (c UserController) GetUser(ctx *gin.Context) {
 	ResponseJSON(ctx, code.Success, "", user)
 }
 
+// @获取用户列表
+// @Summary Get user list
+// @Produce  json
+// @Success 200 {object} Response
+// @Failure 500 {object} Response
+// @Router /v1/user [get]
 func (c UserController) GetUserList(ctx *gin.Context) {
 	cursor := com.StrTo(ctx.Query("cursor")).MustInt64()
 	size := com.StrTo(ctx.Query("size")).MustInt64()
@@ -63,6 +76,13 @@ type UserForm struct {
 	Phone string `json:"phone" form:"phone" binding:"required,email"`
 }
 
+// @创建用户
+// @Summary create a user
+// @Param name body string true "name"
+// @Param phone body string true "phone"
+// @Success 200 {object} Response
+// @Failure 200 {object} Response
+// @Router /v1/user [post]
 func (c UserController) CreateUser(ctx *gin.Context) {
 	var userForm UserForm
 	err := ctx.ShouldBind(&userForm)
@@ -83,6 +103,13 @@ func (c UserController) CreateUser(ctx *gin.Context) {
 	ResponseJSON(ctx, code.Success, "ok", gin.H{"status": "success", "user": user})
 }
 
+// @更新用户
+// @Summary update a user
+// @Param name body string true "name"
+// @Param phone body string true "phone"
+// @Success 200 {object} Response
+// @Failure 200 {object} Response
+// @Router /v1/user [put]
 func (c UserController) UpdateUser(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt64()
 	var userForm UserForm
@@ -104,6 +131,13 @@ func (c UserController) UpdateUser(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"status": "success"})
 }
 
+// @更新用户
+// @Summary delete a user
+// @Produce  json
+// @Param id path string true "id"
+// @Success 200 {object} Response
+// @Failure 500 {object} Response
+// @Router /v1/user/{id} [delete]
 func (c UserController) DeleteUser(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt64()
 	err := c.UserSimpleService.Delete(ctx.Request.Context(), id)
@@ -115,6 +149,12 @@ func (c UserController) DeleteUser(ctx *gin.Context) {
 	ResponseJSON(ctx, code.Success, "", gin.H{"status": "success"})
 }
 
+// @创建用户表
+// @Summary init user table
+// @Produce  json
+// @Success 200 {object} Response
+// @Failure 500 {object} Response
+// @Router /tool/migration/user [get]
 func (c UserController) Migration(ctx *gin.Context) {
 	c.UserSimpleService.Migration()
 	ResponseJSON(ctx, code.Success, "", gin.H{"status": "success"})
