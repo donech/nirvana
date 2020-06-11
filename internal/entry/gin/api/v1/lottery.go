@@ -48,12 +48,12 @@ func (c LotteryController) CreateTicket(ctx *gin.Context) {
 	ResponseJSON(ctx, code.Success, "success", nil)
 }
 
-// @创建用户表
-// @Summary init user table
+// @create lottery tables
+// @Summary init  lottery table
 // @Produce  json
 // @Success 200 {object} Response
 // @Failure 500 {object} Response
-// @Router /tool/migration/user [get]
+// @Router /tool/migration/ticket [get]
 func (c LotteryController) Migration(ctx *gin.Context) {
 	c.lotteryService.Migration()
 	ResponseJSON(ctx, code.Success, "", gin.H{"status": "success"})
