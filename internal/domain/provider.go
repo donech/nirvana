@@ -1,8 +1,14 @@
 package domain
 
 import (
-	"github.com/donech/nirvana/internal/domain/user/service"
+	repository2 "github.com/donech/nirvana/internal/domain/lottery/repository"
+	"github.com/donech/nirvana/internal/domain/lottery/service"
+	"github.com/donech/nirvana/internal/domain/user/repository"
 	"github.com/google/wire"
 )
 
-var WireSet = wire.NewSet(service.NewSimpleService)
+var WireSet = wire.NewSet(
+	repository.NewUserRepository,
+	service.NewLotteryService,
+	repository2.NewTicketRepository,
+	repository2.NewRecordRepository)

@@ -8,7 +8,9 @@ package inject
 import (
 	"github.com/donech/nirvana/internal/config"
 	"github.com/donech/nirvana/internal/conn"
-	"github.com/donech/nirvana/internal/domain/user/service"
+	repository2 "github.com/donech/nirvana/internal/domain/lottery/repository"
+	"github.com/donech/nirvana/internal/domain/lottery/service"
+	"github.com/donech/nirvana/internal/domain/user/repository"
 	"github.com/donech/nirvana/internal/entry/gin"
 	"github.com/donech/nirvana/internal/entry/gin/api/v1"
 	"github.com/donech/nirvana/internal/entry/gin/router"
@@ -23,9 +25,13 @@ func InitApplication() (*gin.Entry, func(), error) {
 	viperViper := viper.GetViper()
 	configConfig := config.New(viperViper)
 	nirvanaDB, cleanup := conn.NewNirvanaDB(configConfig)
-	simpleService := service.NewSimpleService(nirvanaDB)
-	userController := v1.NewUserController(simpleService)
-	routerRouter := router.NewRouter(userController)
+	userRepository := repository.NewUserRepository(nirvanaDB)
+	userController := v1.NewUserController(userRepository)
+	ticketRepository := repository2.NewTicketRepository(nirvanaDB)
+	recordRepository := repository2.NewRecordRepository(nirvanaDB)
+	lotteryService := service.NewLotteryService(ticketRepository, recordRepository)
+	lotteryController := v1.NewLotteryController(lotteryService)
+	routerRouter := router.NewRouter(userController, lotteryController)
 	logger, err := providerLogger(configConfig)
 	if err != nil {
 		cleanup()

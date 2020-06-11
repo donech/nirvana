@@ -9,8 +9,8 @@ type Controller interface {
 	RegisterRoute(engine *gin.RouterGroup)
 }
 
-func NewRouter(userController *v1.UserController) *Router {
-	controllers := []Controller{userController}
+func NewRouter(userController *v1.UserController, lotteryController *v1.LotteryController) *Router {
+	controllers := []Controller{userController, lotteryController}
 	return &Router{controllers: controllers}
 }
 

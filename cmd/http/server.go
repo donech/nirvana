@@ -17,11 +17,20 @@ limitations under the License.
 package http
 
 import (
+	"context"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/donech/nirvana/internal/entry"
 
 	"github.com/donech/nirvana/cmd/http/inject"
+	"github.com/donech/nirvana/internal/config"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // ServerCmd represents the server command
@@ -51,5 +60,25 @@ func run() error {
 	if err != nil {
 		log.Println("entry run failed :", err.Error())
 	}
+	handleSignal(entry)
 	return err
+}
+
+func handleSignal(en entry.Entry) {
+	signalCh := make(chan os.Signal, 4)
+	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
+WAIT:
+	s := <-signalCh
+	if s == syscall.SIGHUP {
+		config.New(viper.GetViper())
+		log.Println("reload config")
+		goto WAIT
+	}
+	log.Println("Shutdown Server ...")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := en.Stop(ctx); err != nil {
+		log.Fatal("Entry stop err :", err)
+	}
+	log.Println("Entry exiting")
 }

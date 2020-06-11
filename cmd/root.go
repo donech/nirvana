@@ -35,8 +35,8 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "nirvana",
-	Short: "A simple web service provider",
-	Long:  `A simple web service provider combines gin framwork and Grpc service`,
+	Short: "A simple web repository provider",
+	Long:  `A simple web repository provider combines gin framwork and Grpc repository`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("requires at least one arg")

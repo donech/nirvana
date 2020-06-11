@@ -6,4 +6,4 @@ import (
 	"github.com/google/wire"
 )
 
-var WireSet = wire.NewSet(NewEntry, router.NewRouter, v1.NewUserController)
+var WireSet = wire.NewSet(NewEntry, router.NewRouter, v1.NewUserController, v1.NewLotteryController)

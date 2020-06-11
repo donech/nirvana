@@ -7,16 +7,16 @@ import (
 
 	"github.com/donech/tool/xlog"
 
-	"github.com/donech/nirvana/internal/domain/user/service"
+	"github.com/donech/nirvana/internal/domain/user/repository"
 	"github.com/gin-gonic/gin"
 )
 
-func NewUserController(userSimpleService *service.SimpleService) *UserController {
+func NewUserController(userSimpleService *repository.UserRepository) *UserController {
 	return &UserController{UserSimpleService: userSimpleService}
 }
 
 type UserController struct {
-	UserSimpleService *service.SimpleService
+	UserSimpleService *repository.UserRepository
 }
 
 // @获取指定ID用户

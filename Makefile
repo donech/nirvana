@@ -4,7 +4,7 @@ PROJECT:=nirvana
 build: wire
 	go build -o $(PROJECT) main.go
 .PHONY: run
-run:
+run: wire
 	go run main.go http
 .PHONY: wire
 wire:
