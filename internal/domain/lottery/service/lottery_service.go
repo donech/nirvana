@@ -24,7 +24,7 @@ func (s *LotteryService) TicketByID(ctx context.Context, id int64) (entity.Lotte
 	return s.ticketRepository.ItemByID(ctx, id)
 }
 
-func (s *LotteryService) CreateTicket(ctx context.Context, ticket entity.LotteryTicket) error {
+func (s *LotteryService) CreateTicket(ctx context.Context, ticket *entity.LotteryTicket) error {
 	return s.ticketRepository.Create(ctx, ticket)
 }
 

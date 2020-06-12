@@ -34,18 +34,19 @@ func (c LotteryController) CreateTicket(ctx *gin.Context) {
 		ResponseJSON(ctx, code.Error, err.Error(), nil)
 		return
 	}
-	err = c.lotteryService.CreateTicket(ctx.Request.Context(), entity.LotteryTicket{
+	ticket := entity.LotteryTicket{
 		UserID:     0,
 		Number:     ticketForm.Number,
 		TicketType: ticketForm.Type,
 		Period:     ticketForm.Period,
-	})
+	}
+	err = c.lotteryService.CreateTicket(ctx.Request.Context(), &ticket)
 	if err != nil {
 		xlog.Ctx(ctx.Request.Context()).Info("create ticket failed :", err.Error())
 		ResponseJSON(ctx, code.Error, err.Error(), nil)
 		return
 	}
-	ResponseJSON(ctx, code.Success, "success", nil)
+	ResponseJSON(ctx, code.Success, "success", ticket)
 }
 
 // @create lottery tables
