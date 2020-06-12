@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+	github.com/dghubble/sling v1.3.0
 	github.com/donech/core v0.0.0-20200508020034-1cf7323147b3
 	github.com/donech/tool v0.0.0-20200601095610-b71b63d5e69d
 	github.com/gin-gonic/gin v1.6.3

@@ -13,6 +13,6 @@ type LotteryTicket struct {
 	xdb.CUDTime
 }
 
-func (e LotteryTicket) TableName() string {
+func (t LotteryTicket) TableName() string {
 	return "lottery_ticket"
 }

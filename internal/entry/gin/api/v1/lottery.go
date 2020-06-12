@@ -27,6 +27,15 @@ func (c LotteryController) GetTicket(ctx *gin.Context) {
 	ResponseJSON(ctx, code.Success, "success", ticket)
 }
 
+func (c LotteryController) CheckTicket(ctx *gin.Context) {
+	id := com.StrTo(ctx.Param("id")).MustInt64()
+	ticket, err := c.lotteryService.TicketCheck(ctx.Request.Context(), id)
+	if err != nil {
+		xlog.Ctx(ctx.Request.Context()).Info("check ticket failed :", err.Error())
+	}
+	ResponseJSON(ctx, code.Success, "success", ticket)
+}
+
 func (c LotteryController) CreateTicket(ctx *gin.Context) {
 	var ticketForm request.TicketForm
 	err := ctx.ShouldBind(&ticketForm)
@@ -49,6 +58,36 @@ func (c LotteryController) CreateTicket(ctx *gin.Context) {
 	ResponseJSON(ctx, code.Success, "success", ticket)
 }
 
+func (c LotteryController) GetRecord(ctx *gin.Context) {
+	var form request.GetRecordForm
+	err := ctx.ShouldBindUri(&form)
+	if err != nil {
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
+		return
+	}
+	record, err := c.lotteryService.RecordByPeriodAndType(ctx.Request.Context(), form.Period, form.Type)
+	if err != nil {
+		xlog.Ctx(ctx.Request.Context()).Info("get record failed :", err.Error())
+	}
+	ResponseJSON(ctx, code.Success, "success", record)
+}
+
+func (c LotteryController) CreateRecord(ctx *gin.Context) {
+	var form request.GetRecordForm
+	err := ctx.ShouldBind(&form)
+	if err != nil {
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
+		return
+	}
+	record, err := c.lotteryService.GenerateRecordByPeriodAndType(ctx.Request.Context(), form.Period, form.Type)
+	if err != nil {
+		xlog.Ctx(ctx.Request.Context()).Info("get record failed :", err.Error())
+		ResponseJSON(ctx, code.Error, err.Error(), nil)
+		return
+	}
+	ResponseJSON(ctx, code.Success, "success", record)
+}
+
 // @create lottery tables
 // @Summary init  lottery table
 // @Produce  json
@@ -61,9 +100,12 @@ func (c LotteryController) Migration(ctx *gin.Context) {
 }
 
 func (c LotteryController) RegisterRoute(engine *gin.RouterGroup) {
-	r := engine.Group("/v1/ticket")
-	r.GET("/:id", c.GetTicket)
-	r.POST("/", c.CreateTicket)
+	r := engine.Group("/v1/lottery")
+	r.GET("/ticket/:id", c.GetTicket)
+	r.POST("/ticket", c.CreateTicket)
+	r.GET("/check/:id", c.CheckTicket)
+	r.GET("/record/:type/:period", c.GetRecord)
+	r.POST("/record", c.CreateRecord)
 	t := engine.Group("/tool")
 	t.GET("/migration/ticket", c.Migration)
 }

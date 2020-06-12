@@ -13,3 +13,5 @@ wire:
 swag:
 	@echo "generate gin swagger doc."
 	swag init --output=internal/entry/gin/docs
+.PHONY: test
+	go test ./...
