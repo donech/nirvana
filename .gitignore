@@ -3,7 +3,7 @@
 !.gitignore
 vendor
 *.DS_Store
-.idea/
+.idea
 main
 nirvana
 go.sum
