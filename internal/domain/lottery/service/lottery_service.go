@@ -31,7 +31,7 @@ func (s *LotteryService) TicketByID(ctx context.Context, id int64) (entity.Lotte
 
 func (s *LotteryService) TicketCheck(ctx context.Context, id int64) (entity.LotteryTicket, error) {
 	ticket, err := s.TicketByID(ctx, id)
-	if err != nil || ticket.Level > 0 {
+	if err != nil || ticket.IsChecked() {
 		return ticket, err
 	}
 	record, err := s.RecordByPeriodAndType(ctx, ticket.Period, ticket.TicketType)
@@ -42,6 +42,7 @@ func (s *LotteryService) TicketCheck(ctx context.Context, id int64) (entity.Lott
 	level, price := calculator.Calculate(ticket.Number, record.Number)
 	ticket.Level = level
 	ticket.Price = price
+	ticket.Status = entity.TicketCheckedStatus
 	err = s.ticketRepository.Save(ctx, &ticket)
 	if err != nil {
 		return ticket, err
