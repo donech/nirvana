@@ -11,9 +11,9 @@ import (
 	repository2 "github.com/donech/nirvana/internal/domain/lottery/repository"
 	"github.com/donech/nirvana/internal/domain/lottery/service"
 	"github.com/donech/nirvana/internal/domain/user/repository"
-	"github.com/donech/nirvana/internal/entry/gin"
+	gin2 "github.com/donech/nirvana/internal/entry/gin"
 	"github.com/donech/nirvana/internal/entry/gin/api/v1"
-	"github.com/donech/nirvana/internal/entry/gin/router"
+	"github.com/donech/tool/entry/gin"
 	"github.com/donech/tool/xlog"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -31,13 +31,14 @@ func InitApplication() (*gin.Entry, func(), error) {
 	recordRepository := repository2.NewRecordRepository(nirvanaDB)
 	lotteryService := service.NewLotteryService(ticketRepository, recordRepository)
 	lotteryController := v1.NewLotteryController(lotteryService)
-	routerRouter := router.NewRouter(userController, lotteryController)
+	defaultController := v1.NewDefaultController()
+	router := gin2.NewRouter(userController, lotteryController, defaultController)
 	logger, err := providerLogger(configConfig)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	entry := gin.NewEntry(configConfig, routerRouter, logger)
+	entry := gin2.NewEntry(configConfig, router, logger)
 	return entry, func() {
 		cleanup()
 	}, nil

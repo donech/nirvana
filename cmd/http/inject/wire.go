@@ -6,7 +6,8 @@ import (
 	"github.com/donech/nirvana/internal/config"
 	"github.com/donech/nirvana/internal/conn"
 	"github.com/donech/nirvana/internal/domain"
-	"github.com/donech/nirvana/internal/entry/gin"
+	gin2 "github.com/donech/nirvana/internal/entry/gin"
+	"github.com/donech/tool/entry/gin"
 	"github.com/donech/tool/xlog"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
@@ -21,7 +22,7 @@ func InitApplication() (entry *gin.Entry, cleanup func(), err error) {
 	wire.Build(
 		config.New,
 		viper.GetViper,
-		gin.WireSet,
+		gin2.WireSet,
 		domain.WireSet,
 		providerLogger,
 		conn.NewNirvanaDB,

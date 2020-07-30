@@ -24,7 +24,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/donech/nirvana/internal/entry"
+	"github.com/donech/tool/entry"
 
 	"github.com/donech/nirvana/cmd/http/inject"
 	"github.com/donech/nirvana/internal/config"
@@ -44,7 +44,7 @@ var ServerCmd = &cobra.Command{
 }
 
 func run() error {
-	entry, clean, err := inject.InitApplication()
+	en, clean, err := inject.InitApplication()
 	defer func() {
 		if clean != nil {
 			clean()
@@ -56,11 +56,11 @@ func run() error {
 		return err
 	}
 
-	err = entry.Run()
+	err = en.Run()
 	if err != nil {
-		log.Println("entry run failed :", err.Error())
+		log.Println("en run failed :", err.Error())
 	}
-	handleSignal(entry)
+	handleSignal(en)
 	return err
 }
 
