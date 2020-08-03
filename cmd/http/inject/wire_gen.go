@@ -32,7 +32,11 @@ func InitApplication() (*gin.Entry, func(), error) {
 	lotteryService := service.NewLotteryService(ticketRepository, recordRepository)
 	lotteryController := v1.NewLotteryController(lotteryService)
 	defaultController := v1.NewDefaultController()
-	router := gin2.NewRouter(userController, lotteryController, defaultController)
+	loginFunc := gin2.NewLoginFunc()
+	jwtFactory := gin2.NewJWTFactory(configConfig, loginFunc)
+	jwtMiddleware := gin2.NewJWTMiddleware(jwtFactory)
+	jwtController := v1.NewJwtController(jwtMiddleware)
+	router := gin2.NewRouter(userController, lotteryController, defaultController, jwtController)
 	logger, err := providerLogger(configConfig)
 	if err != nil {
 		cleanup()

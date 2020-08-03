@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/dghubble/sling v1.3.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/donech/core v0.0.0-20200508020034-1cf7323147b3
 	github.com/donech/tool v0.0.0-20200601095610-b71b63d5e69d
 	github.com/gin-gonic/gin v1.6.3
@@ -21,8 +22,6 @@ require (
 	github.com/unknwon/com v1.0.1
 	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
-	golang.org/x/tools v0.0.0-20200608174601-1b747fd94509 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
 
 replace github.com/donech/tool => /Users/piaoweixiong/donech/tool

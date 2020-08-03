@@ -3,6 +3,8 @@ package config
 import (
 	"log"
 
+	"github.com/donech/tool/xjwt"
+
 	"github.com/donech/tool/xdb"
 
 	"github.com/donech/tool/xlog"
@@ -17,6 +19,7 @@ type Config struct {
 	Gin         GinConfig         `yaml:"gin"`
 	Log         xlog.Config       `yaml:"log"`
 	NirvanaDB   xdb.Config        `yaml:"nirvanaDB"`
+	JWT         xjwt.Config       `yaml:"jwt"`
 }
 
 type ApplicationConfig struct {
