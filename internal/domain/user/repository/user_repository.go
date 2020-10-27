@@ -23,6 +23,11 @@ func (r UserRepository) ItemByID(ctx context.Context, id int64) (e entity.User, 
 	return e, err
 }
 
+func (r UserRepository) ItemByEmail(ctx context.Context, email string) (e entity.User, err error) {
+	err = xdb.Trace(ctx, r.DB).Where("email = ?", email).First(&e).Error
+	return e, err
+}
+
 func (r UserRepository) ItemsByCursor(ctx context.Context, cursor, size int64) (e []entity.User, err error) {
 	err = xdb.Trace(ctx, r.DB).Where("id >= ?", cursor).Limit(size).Find(&e).Error
 	return e, err

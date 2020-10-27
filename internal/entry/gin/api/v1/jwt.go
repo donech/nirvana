@@ -1,20 +1,12 @@
 package v1
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/donech/tool/entry/gin/middleware"
-	"github.com/donech/tool/xjwt"
 	"github.com/gin-gonic/gin"
 )
 
 type JwtController struct {
 	jwtMiddleware *middleware.JWTMiddleware
-}
-
-func (j JwtController) Login() xjwt.LoginFunc {
-	return func(form xjwt.LoginForm) (jwt.MapClaims, error) {
-		return jwt.MapClaims{"username": "solar", "password": "123456"}, nil
-	}
 }
 
 func (j JwtController) TestJwt(ctx *gin.Context) {

@@ -25,6 +25,7 @@ type Config struct {
 type ApplicationConfig struct {
 	Name string `yaml:"name"`
 	Mod  string `yaml:"mod"`
+	Key  string `yaml:"key"`
 }
 
 type GinConfig struct {

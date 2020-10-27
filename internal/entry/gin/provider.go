@@ -1,7 +1,10 @@
 package gin
 
 import (
+	"context"
 	"log"
+
+	xlog "github.com/donech/tool/xlog"
 
 	"github.com/donech/nirvana/internal/domain/user/service"
 
@@ -50,8 +53,12 @@ func NewJWTFactory(conf *config.Config, loginFunc xjwt.LoginFunc) xjwt.JWTFactor
 }
 
 func NewLoginFunc(s *service.UserService) xjwt.LoginFunc {
-	return func(form xjwt.LoginForm) (jwt.MapClaims, error) {
-		user := s.Login(form.Username, form.Password)
+	return func(ctx context.Context, form xjwt.LoginForm) (jwt.MapClaims, error) {
+		user, err := s.Login(ctx, form.Username, form.Password)
+		if err != nil {
+			xlog.S(ctx).Info("登录失败: LoginForm=%#v, err=%#v", form, err)
+			return nil, err
+		}
 		return jwt.MapClaims{
 			"id":       user.ID,
 			"username": user.Name,

@@ -1,9 +1,14 @@
 package service
 
 import (
+	"context"
+	"errors"
+
+	"github.com/jinzhu/gorm"
+
+	"github.com/donech/nirvana/internal/common"
 	"github.com/donech/nirvana/internal/domain/user/entity"
 	"github.com/donech/nirvana/internal/domain/user/repository"
-	"github.com/donech/tool/xdb"
 )
 
 func NewUserService(userRepository *repository.UserRepository) *UserService {
@@ -16,16 +21,19 @@ type UserService struct {
 	userRepository *repository.UserRepository
 }
 
-func (s UserService) Login(account, password string) entity.User {
-	return entity.User{
-		Entity:   xdb.Entity{ID: 1},
-		Name:     "solar",
-		Phone:    "180010123261",
-		Email:    "solarpwx@yeah.net",
-		Password: "piao1234",
-		Status:   1,
-		CUDTime:  xdb.CUDTime{},
+func (s UserService) Login(ctx context.Context, account, password string) (entity.User, error) {
+	password = common.SignPassword(password)
+	user, err := s.userRepository.ItemByEmail(ctx, account)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return entity.User{}, errors.New("account or password error")
+		}
+		return entity.User{}, err
 	}
+	if user.Password != password {
+		return entity.User{}, errors.New("account or password error")
+	}
+	return user, nil
 }
 
 func (s UserService) Migration() {
