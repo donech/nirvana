@@ -6,7 +6,6 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/dghubble/sling v1.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/donech/core v0.0.0-20200508020034-1cf7323147b3
 	github.com/donech/tool v0.0.0-20200601095610-b71b63d5e69d
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/spec v0.19.8 // indirect

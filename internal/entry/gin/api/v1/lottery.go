@@ -1,11 +1,11 @@
 package v1
 
 import (
-	"github.com/donech/core/xlog"
 	"github.com/donech/nirvana/internal/code"
 	"github.com/donech/nirvana/internal/domain/lottery/entity"
 	"github.com/donech/nirvana/internal/domain/lottery/service"
 	"github.com/donech/nirvana/internal/entry/gin/api/v1/request"
+	"github.com/donech/tool/xlog"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
 )
@@ -22,7 +22,7 @@ func (c LotteryController) GetTicket(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt64()
 	ticket, err := c.lotteryService.TicketByID(ctx.Request.Context(), id)
 	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Info("get ticket failed :", err.Error())
+		xlog.S(ctx.Request.Context()).Info("get ticket failed :", err.Error())
 	}
 	ResponseJSON(ctx, code.Success, "success", ticket)
 }
@@ -31,7 +31,7 @@ func (c LotteryController) CheckTicket(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt64()
 	ticket, err := c.lotteryService.TicketCheck(ctx.Request.Context(), id)
 	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Info("check ticket failed :", err.Error())
+		xlog.S(ctx.Request.Context()).Info("check ticket failed :", err.Error())
 	}
 	ResponseJSON(ctx, code.Success, "success", ticket)
 }
@@ -51,7 +51,7 @@ func (c LotteryController) CreateTicket(ctx *gin.Context) {
 	}
 	err = c.lotteryService.CreateTicket(ctx.Request.Context(), &ticket)
 	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Info("create ticket failed :", err.Error())
+		xlog.S(ctx.Request.Context()).Info("create ticket failed :", err.Error())
 		ResponseJSON(ctx, code.Error, err.Error(), nil)
 		return
 	}
@@ -67,7 +67,7 @@ func (c LotteryController) GetRecord(ctx *gin.Context) {
 	}
 	record, err := c.lotteryService.RecordByPeriodAndType(ctx.Request.Context(), form.Period, form.Type)
 	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Info("get record failed :", err.Error())
+		xlog.S(ctx.Request.Context()).Info("get record failed :", err.Error())
 	}
 	ResponseJSON(ctx, code.Success, "success", record)
 }
@@ -81,7 +81,7 @@ func (c LotteryController) CreateRecord(ctx *gin.Context) {
 	}
 	record, err := c.lotteryService.GenerateRecordByPeriodAndType(ctx.Request.Context(), form.Period, form.Type)
 	if err != nil {
-		xlog.Ctx(ctx.Request.Context()).Info("get record failed :", err.Error())
+		xlog.S(ctx.Request.Context()).Info("get record failed :", err.Error())
 		ResponseJSON(ctx, code.Error, err.Error(), nil)
 		return
 	}
