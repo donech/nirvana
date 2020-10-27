@@ -2,23 +2,28 @@ package api
 
 import (
 	"github.com/donech/nirvana/internal/code"
+	"github.com/donech/nirvana/internal/common"
 	"github.com/donech/nirvana/internal/domain/lottery/entity"
 	"github.com/donech/nirvana/internal/domain/lottery/service"
+	"github.com/donech/tool/entry/gin/middleware"
 	"github.com/donech/tool/xlog"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
 )
 
-func NewLotteryController(lotteryService *service.LotteryService) *LotteryController {
-	return &LotteryController{lotteryService: lotteryService}
+func NewLotteryController(lotteryService *service.LotteryService, jwtMiddleware *middleware.JWTMiddleware) *LotteryController {
+	return &LotteryController{lotteryService: lotteryService, jwtMiddleware: jwtMiddleware}
 }
 
 type LotteryController struct {
 	lotteryService *service.LotteryService
+	jwtMiddleware  *middleware.JWTMiddleware
 }
 
 func (c LotteryController) GetTicket(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt64()
+	userId := common.GetUserID(ctx.Request.Context())
+	xlog.S(ctx.Request.Context()).Info("userID is: ", userId)
 	ticket, err := c.lotteryService.TicketByID(ctx.Request.Context(), id)
 	if err != nil {
 		xlog.S(ctx.Request.Context()).Info("get ticket failed :", err.Error())
@@ -110,7 +115,7 @@ func (c LotteryController) Migration(ctx *gin.Context) {
 }
 
 func (c LotteryController) RegisterRoute(engine *gin.RouterGroup) {
-	r := engine.Group("/v1/lottery")
+	r := engine.Group("/v1/lottery").Use(c.jwtMiddleware.MiddleWareImpl())
 	r.GET("/ticket/:id", c.GetTicket)
 	r.POST("/ticket", c.CreateTicket)
 	r.GET("/check/:id", c.CheckTicket)
