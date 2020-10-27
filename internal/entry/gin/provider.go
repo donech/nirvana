@@ -3,6 +3,8 @@ package gin
 import (
 	"log"
 
+	"github.com/donech/nirvana/internal/domain/user/service"
+
 	"github.com/dgrijalva/jwt-go"
 
 	"github.com/donech/tool/entry/gin/middleware"
@@ -17,7 +19,12 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewRouter(u *v1.UserController, l *v1.LotteryController, d *v1.DefaultController, jwt *v1.JwtController) gin.Router {
+func NewRouter(
+	u *v1.UserController,
+	l *v1.LotteryController,
+	d *v1.DefaultController,
+	jwt *v1.JwtController,
+) gin.Router {
 	r := &gin.DefaultRouter{}
 	r.RegisterController(u)
 	r.RegisterController(l)
@@ -42,9 +49,16 @@ func NewJWTFactory(conf *config.Config, loginFunc xjwt.LoginFunc) xjwt.JWTFactor
 	return f
 }
 
-func NewLoginFunc() xjwt.LoginFunc {
-	return func(form xjwt.LoginInForm) (jwt.MapClaims, error) {
-		return jwt.MapClaims{"username": form.Username, "password": form.Password}, nil
+func NewLoginFunc(s *service.UserService) xjwt.LoginFunc {
+	return func(form xjwt.LoginForm) (jwt.MapClaims, error) {
+		user := s.Login(form.Username, form.Password)
+		return jwt.MapClaims{
+			"id":       user.ID,
+			"username": user.Name,
+			"email":    user.Email,
+			"phone":    user.Phone,
+			"status":   user.Status,
+		}, nil
 	}
 }
 

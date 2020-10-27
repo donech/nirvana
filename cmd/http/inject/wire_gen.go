@@ -11,6 +11,7 @@ import (
 	repository2 "github.com/donech/nirvana/internal/domain/lottery/repository"
 	"github.com/donech/nirvana/internal/domain/lottery/service"
 	"github.com/donech/nirvana/internal/domain/user/repository"
+	service2 "github.com/donech/nirvana/internal/domain/user/service"
 	gin2 "github.com/donech/nirvana/internal/entry/gin"
 	"github.com/donech/nirvana/internal/entry/gin/api/v1"
 	"github.com/donech/tool/entry/gin"
@@ -32,7 +33,8 @@ func InitApplication() (*gin.Entry, func(), error) {
 	lotteryService := service.NewLotteryService(ticketRepository, recordRepository)
 	lotteryController := v1.NewLotteryController(lotteryService)
 	defaultController := v1.NewDefaultController()
-	loginFunc := gin2.NewLoginFunc()
+	userService := service2.NewUserService(userRepository)
+	loginFunc := gin2.NewLoginFunc(userService)
 	jwtFactory := gin2.NewJWTFactory(configConfig, loginFunc)
 	jwtMiddleware := gin2.NewJWTMiddleware(jwtFactory)
 	jwtController := v1.NewJwtController(jwtMiddleware)

@@ -12,7 +12,7 @@ type JwtController struct {
 }
 
 func (j JwtController) Login() xjwt.LoginFunc {
-	return func(form xjwt.LoginInForm) (jwt.MapClaims, error) {
+	return func(form xjwt.LoginForm) (jwt.MapClaims, error) {
 		return jwt.MapClaims{"username": "solar", "password": "123456"}, nil
 	}
 }
