@@ -1,6 +1,8 @@
 package common
 
 import (
+	"encoding/base64"
+
 	"github.com/donech/tool/cipher"
 )
 
@@ -13,6 +15,6 @@ func SetKey(k string) {
 }
 
 func SignPassword(password string) string {
-	res := cipher.AesEncryptCBC([]byte(password), []byte(key))
-	return string(res)
+	dst := cipher.AesEncryptCBC([]byte(password), []byte(key))
+	return base64.StdEncoding.EncodeToString(dst)
 }
