@@ -1,10 +1,9 @@
-package v1
+package api
 
 import (
 	"github.com/donech/nirvana/internal/code"
 	"github.com/donech/nirvana/internal/domain/lottery/entity"
 	"github.com/donech/nirvana/internal/domain/lottery/service"
-	"github.com/donech/nirvana/internal/entry/gin/api/v1/request"
 	"github.com/donech/tool/xlog"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
@@ -36,8 +35,14 @@ func (c LotteryController) CheckTicket(ctx *gin.Context) {
 	ResponseJSON(ctx, code.Success, "success", ticket)
 }
 
+type TicketForm struct {
+	Number string `json:"number" form:"number" binding:"required"`
+	Period string `json:"period" form:"period" binding:"required"`
+	Type   string `json:"type" form:"type" binding:"required"`
+}
+
 func (c LotteryController) CreateTicket(ctx *gin.Context) {
-	var ticketForm request.TicketForm
+	var ticketForm TicketForm
 	err := ctx.ShouldBind(&ticketForm)
 	if err != nil {
 		ResponseJSON(ctx, code.Error, err.Error(), nil)
@@ -58,8 +63,13 @@ func (c LotteryController) CreateTicket(ctx *gin.Context) {
 	ResponseJSON(ctx, code.Success, "success", ticket)
 }
 
+type GetRecordForm struct {
+	Period string `json:"period" form:"period" binding:"required"`
+	Type   string `json:"type" form:"type" binding:"required,oneof=TwoToneSphere SuperLotto"`
+}
+
 func (c LotteryController) GetRecord(ctx *gin.Context) {
-	var form request.GetRecordForm
+	var form GetRecordForm
 	err := ctx.ShouldBindUri(&form)
 	if err != nil {
 		ResponseJSON(ctx, code.Error, err.Error(), nil)
@@ -73,7 +83,7 @@ func (c LotteryController) GetRecord(ctx *gin.Context) {
 }
 
 func (c LotteryController) CreateRecord(ctx *gin.Context) {
-	var form request.GetRecordForm
+	var form GetRecordForm
 	err := ctx.ShouldBind(&form)
 	if err != nil {
 		ResponseJSON(ctx, code.Error, err.Error(), nil)

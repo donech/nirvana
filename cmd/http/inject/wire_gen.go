@@ -13,7 +13,7 @@ import (
 	"github.com/donech/nirvana/internal/domain/user/repository"
 	service2 "github.com/donech/nirvana/internal/domain/user/service"
 	gin2 "github.com/donech/nirvana/internal/entry/gin"
-	"github.com/donech/nirvana/internal/entry/gin/api/v1"
+	"github.com/donech/nirvana/internal/entry/gin/api"
 	"github.com/donech/tool/entry/gin"
 	"github.com/donech/tool/xlog"
 	"github.com/spf13/viper"
@@ -27,17 +27,17 @@ func InitApplication() (*gin.Entry, func(), error) {
 	configConfig := config.New(viperViper)
 	nirvanaDB, cleanup := conn.NewNirvanaDB(configConfig)
 	userRepository := repository.NewUserRepository(nirvanaDB)
-	userController := v1.NewUserController(userRepository)
+	userController := api.NewUserController(userRepository)
 	ticketRepository := repository2.NewTicketRepository(nirvanaDB)
 	recordRepository := repository2.NewRecordRepository(nirvanaDB)
 	lotteryService := service.NewLotteryService(ticketRepository, recordRepository)
-	lotteryController := v1.NewLotteryController(lotteryService)
-	defaultController := v1.NewDefaultController()
+	lotteryController := api.NewLotteryController(lotteryService)
+	defaultController := api.NewDefaultController()
 	userService := service2.NewUserService(userRepository)
 	loginFunc := gin2.NewLoginFunc(userService)
 	jwtFactory := gin2.NewJWTFactory(configConfig, loginFunc)
 	jwtMiddleware := gin2.NewJWTMiddleware(jwtFactory)
-	jwtController := v1.NewJwtController(jwtMiddleware)
+	jwtController := api.NewJwtController(jwtMiddleware)
 	router := gin2.NewRouter(userController, lotteryController, defaultController, jwtController)
 	logger, err := providerLogger(configConfig)
 	if err != nil {

@@ -1,4 +1,4 @@
-package v1
+package api
 
 import (
 	_ "github.com/donech/nirvana/internal/entry/gin/docs"

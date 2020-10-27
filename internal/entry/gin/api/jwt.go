@@ -1,4 +1,4 @@
-package v1
+package api
 
 import (
 	"github.com/donech/tool/entry/gin/middleware"

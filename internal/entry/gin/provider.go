@@ -4,6 +4,8 @@ import (
 	"context"
 	"log"
 
+	"github.com/donech/nirvana/internal/entry/gin/api"
+
 	xlog "github.com/donech/tool/xlog"
 
 	"github.com/donech/nirvana/internal/domain/user/service"
@@ -13,7 +15,6 @@ import (
 	"github.com/donech/tool/entry/gin/middleware"
 
 	"github.com/donech/nirvana/internal/config"
-	v1 "github.com/donech/nirvana/internal/entry/gin/api/v1"
 	_ "github.com/donech/nirvana/internal/entry/gin/docs"
 	"github.com/donech/tool/entry/gin"
 	"github.com/donech/tool/xjwt"
@@ -23,10 +24,10 @@ import (
 )
 
 func NewRouter(
-	u *v1.UserController,
-	l *v1.LotteryController,
-	d *v1.DefaultController,
-	jwt *v1.JwtController,
+	u *api.UserController,
+	l *api.LotteryController,
+	d *api.DefaultController,
+	jwt *api.JwtController,
 ) gin.Router {
 	r := &gin.DefaultRouter{}
 	r.RegisterController(u)
@@ -74,4 +75,4 @@ func NewJWTMiddleware(factory xjwt.JWTFactory) *middleware.JWTMiddleware {
 	return &m
 }
 
-var WireSet = wire.NewSet(NewEntry, NewLoginFunc, NewJWTMiddleware, NewJWTFactory, NewRouter, v1.NewUserController, v1.NewLotteryController, v1.NewDefaultController, v1.NewJwtController)
+var WireSet = wire.NewSet(NewEntry, NewLoginFunc, NewJWTMiddleware, NewJWTFactory, NewRouter, api.NewUserController, api.NewLotteryController, api.NewDefaultController, api.NewJwtController)
