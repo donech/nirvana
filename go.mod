@@ -10,6 +10,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/spec v0.19.8 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
+	github.com/golang/protobuf v1.3.3
 	github.com/google/wire v0.4.0
 	github.com/jinzhu/gorm v1.9.12
 	github.com/mailru/easyjson v0.7.1 // indirect
@@ -21,6 +22,7 @@ require (
 	github.com/unknwon/com v1.0.1
 	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
+	google.golang.org/grpc v1.33.1
 )
 
 replace github.com/donech/tool => /Users/piaoweixiong/donech/tool

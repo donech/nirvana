@@ -3,6 +3,8 @@ package config
 import (
 	"log"
 
+	"github.com/donech/tool/entry/grpc"
+
 	"github.com/donech/tool/xjwt"
 
 	"github.com/donech/tool/xdb"
@@ -17,6 +19,7 @@ var C *Config
 type Config struct {
 	Application ApplicationConfig `yaml:"application"`
 	Gin         GinConfig         `yaml:"gin"`
+	Grpc        grpc.Config       `yaml:"gin"`
 	Log         xlog.Config       `yaml:"log"`
 	NirvanaDB   xdb.Config        `yaml:"nirvanaDB"`
 	JWT         xjwt.Config       `yaml:"jwt"`
