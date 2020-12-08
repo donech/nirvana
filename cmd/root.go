@@ -22,6 +22,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/donech/nirvana/cmd/cron"
+
 	"github.com/donech/nirvana/cmd/grpc"
 	"github.com/donech/nirvana/cmd/http"
 
@@ -62,6 +64,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "cmd/app.yaml", "config file (default is cmd/app.yaml)")
 	rootCmd.AddCommand(http.ServerCmd)
 	rootCmd.AddCommand(grpc.ServerCmd)
+	rootCmd.AddCommand(cron.Command)
 }
 
 // initConfig reads in config file and ENV variables if set.

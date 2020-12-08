@@ -2,14 +2,16 @@ package conn
 
 import (
 	"context"
+	"log"
 	"sync"
 	"testing"
 
 	"github.com/donech/tool/xlog"
+
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLotteryClient_GetTwoToneSphere(t *testing.T) {
+func init() {
 	conf := xlog.Config{
 		ServiceName: "xlog-test",
 		Level:       "info",
@@ -29,8 +31,11 @@ func TestLotteryClient_GetTwoToneSphere(t *testing.T) {
 	}
 	_, err := xlog.New(conf)
 	if err != nil {
-		t.Error("创建 ginzap.logger 失败")
+		log.Fatal("创建 ginzap.logger 失败")
 	}
+}
+
+func TestLotteryClient_GetTwoToneSphere(t *testing.T) {
 	client := NewLotteryClient()
 	tests := []struct {
 		desc     string
@@ -54,4 +59,22 @@ func TestLotteryClient_GetTwoToneSphere(t *testing.T) {
 		}(tt)
 	}
 	wg.Wait()
+}
+
+func TestLotteryClient_GetSupperLotto(t *testing.T) {
+	tests := []struct {
+		name   string
+		period string
+		want   string
+	}{
+		{name: "2020-123期", period: "2020-123", want: "01,07,11,15,21|04,11"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &LotteryClient{}
+			if got := c.GetSupperLotto(context.Background(), tt.period); got != tt.want {
+				t.Errorf("GetSupperLotto() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

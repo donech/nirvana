@@ -21,3 +21,8 @@ grpc-wire:
 .PHONY: grpc-run
 grpc-run: grpc-wire
 	go run main.go grpc
+cron-wire:
+	wire gen cmd/cron/inject/wire.go
+.PHONY: cron-run
+cron-run: cron-wire
+	go run main.go cron --tp=123 --sp=123 --tn='1,2,3,4,5,6|7' --sn='1,2,3,4,5|6,7'
