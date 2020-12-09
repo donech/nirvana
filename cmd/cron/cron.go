@@ -53,7 +53,7 @@ var Command = &cobra.Command{
 			log.Println("end task")
 		}
 		crontab := cron.New()
-		_, err = crontab.AddFunc("* * * * *", task)
+		_, err = crontab.AddFunc("* * 10 * 1,3,5", task)
 		if err != nil {
 			log.Fatalf("add crontab error, %#v", err)
 		}
