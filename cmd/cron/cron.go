@@ -2,12 +2,13 @@ package cron
 
 import (
 	"context"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
+	"strings"
 
-	"github.com/robfig/cron/v3"
+	"github.com/unknwon/com"
 
 	"github.com/donech/tool/xlog"
 
@@ -19,12 +20,14 @@ var SuperLottoPeriodStart int
 var TwoToneSpherePeriodStart int
 var TwoToneSphereNumbers string
 var SuperLottoNumbers string
+var PeriodFile string
 
 func init() {
-	Command.PersistentFlags().IntVar(&TwoToneSpherePeriodStart, "tp", 123, "use -tp to set TwoToneSpherePeriodStart")
-	Command.PersistentFlags().IntVar(&SuperLottoPeriodStart, "sp", 123, "use -sp to set SuperLottoPeriodStart")
-	Command.PersistentFlags().StringVar(&TwoToneSphereNumbers, "tn", "", "use -tn to set TwoToneSphereNumbers")
-	Command.PersistentFlags().StringVar(&SuperLottoNumbers, "sn", "", "use -sn to set SuperLottoNumbers")
+	Command.PersistentFlags().IntVar(&TwoToneSpherePeriodStart, "tp", 123, "use --tp to set TwoToneSpherePeriodStart")
+	Command.PersistentFlags().IntVar(&SuperLottoPeriodStart, "sp", 123, "use --sp to set SuperLottoPeriodStart")
+	Command.PersistentFlags().StringVar(&TwoToneSphereNumbers, "tn", "", "use --tn to set TwoToneSphereNumbers")
+	Command.PersistentFlags().StringVar(&SuperLottoNumbers, "sn", "", "use --sn to set SuperLottoNumbers")
+	Command.PersistentFlags().StringVar(&PeriodFile, "pf", "", "use --pf to set PeriodFile")
 }
 
 var Command = &cobra.Command{
@@ -37,6 +40,7 @@ var Command = &cobra.Command{
 			log.Fatalf("init application error %v", err)
 		}
 		defer clean()
+		checkoutPeriodFile()
 		app.Tp = TwoToneSpherePeriodStart
 		app.Sp = SuperLottoPeriodStart
 		app.Tn = TwoToneSphereNumbers
@@ -50,21 +54,38 @@ var Command = &cobra.Command{
 			}
 			app.Tp++
 			app.Sp++
-			log.Println("end task")
+			logPeriodFile(app.Tp, app.Sp)
+			log.Println("end task", "下一期为:", app.Tp, app.Sp)
 		}
-		crontab := cron.New()
-		_, err = crontab.AddFunc("10 10 * * 1,3,5", task)
-		if err != nil {
-			log.Fatalf("add crontab error, %#v", err)
-		}
-		crontab.Start()
-		signalCh := make(chan os.Signal, 2)
-		signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
-
-		select {
-		case <-signalCh:
-			log.Println("Interrupt")
-		}
+		task()
 		return nil
 	},
+}
+
+func checkoutPeriodFile() {
+	content, err := ioutil.ReadFile(PeriodFile)
+	if err != nil {
+		log.Printf("read file %s error %v", PeriodFile, err)
+		return
+	}
+	period := strings.Split(string(content), "|")
+	if len(period) == 2 {
+		log.Println("存在历史记录忽略期数配置", "记录文件为:", PeriodFile)
+		TwoToneSpherePeriodStart, SuperLottoPeriodStart = com.StrTo(period[0]).MustInt(), com.StrTo(period[1]).MustInt()
+	}
+}
+
+func logPeriodFile(tPeriod, sPeriod int) {
+	t := "%d|%d"
+	content := fmt.Sprintf(t, tPeriod, sPeriod)
+	f, err := os.OpenFile(PeriodFile, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	_, err = f.Write([]byte(content))
+	if err != nil {
+		log.Println(err.Error())
+	}
+	f.Close()
 }
