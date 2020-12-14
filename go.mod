@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+	github.com/coreos/etcd v3.3.13+incompatible
 	github.com/dghubble/sling v1.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/donech/tool v0.0.0-20200601095610-b71b63d5e69d

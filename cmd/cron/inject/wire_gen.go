@@ -49,13 +49,20 @@ type Entry struct {
 	Sn     string
 }
 
-func (e Entry) Run() error {
-	e.checkTwoToneSphere()
-	e.checkSupperLotto()
+func (e *Entry) Run() error {
+	weekday := time.Now().Weekday()
+	switch weekday {
+	case time.Monday, time.Wednesday, time.Friday:
+		e.checkTwoToneSphere()
+	case time.Tuesday, time.Thursday, time.Sunday:
+		e.checkSupperLotto()
+	default:
+		log.Printf("Saturday don't need to search result")
+	}
 	return nil
 }
 
-func (e Entry) checkTwoToneSphere() error {
+func (e *Entry) checkTwoToneSphere() error {
 	period := fmt.Sprintf(TwoToneSpherePeriodTep, time.Now().Year(), e.Tp)
 	if e.Tn == "" {
 		log.Printf("无 双色球号码 返回")
@@ -67,13 +74,13 @@ func (e Entry) checkTwoToneSphere() error {
 		log.Printf("无 双色球计算器 返回")
 		return nil
 	}
-	level, price := calculator.Calculate(e.Sn, number)
-	log.Printf("%s期开奖结果为:%s,你的号码为:%s, 中奖情况 level:%d, price:%d", period, number, e.Tn, level, price)
-	return nil
+	level, price := calculator.Calculate(e.Tn, number)
+	log.Printf("双色球%s期开奖结果为:%s,你的号码为:%s, 中奖情况 level:%d, price:%d", period, number, e.Tn, level, price)
+	e.Tp++
 	return nil
 }
 
-func (e Entry) checkSupperLotto() error {
+func (e *Entry) checkSupperLotto() error {
 	period := fmt.Sprintf(SuperLottoPeriodTep, time.Now().Year(), e.Sp)
 	if e.Sn == "" {
 		log.Printf("无 大乐透号码 返回")
@@ -86,11 +93,12 @@ func (e Entry) checkSupperLotto() error {
 		return nil
 	}
 	level, price := calculator.Calculate(e.Sn, number)
-	log.Printf("%s期开奖结果为:%s,你的号码为:%s, 中奖情况 level:%d, price:%d", period, number, e.Sn, level, price)
+	log.Printf("大乐透%s期开奖结果为:%s,你的号码为:%s, 中奖情况 level:%d, price:%d", period, number, e.Sn, level, price)
+	e.Sp++
 	return nil
 }
 
-func (e Entry) Stop(ctx context.Context) error {
+func (e *Entry) Stop(ctx context.Context) error {
 	panic("implement me")
 }
 
